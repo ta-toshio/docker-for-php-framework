@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+
+### PHP-FPM ##############################################
+    php-fpm:
+      build:
+        context: ./php-fpm
+      volumes:
+        - ./php-fpm/php72.ini:/usr/local/etc/php/php.ini
+        - ./src:/var/www:cached
+      expose:
+        - "9000"
+
+
+### NGINX Server #########################################
+    nginx:
+      build:
+        context: ./nginx
+        args:
+          - PHP_UPSTREAM_CONTAINER=php-fpm
+          - PHP_UPSTREAM_PORT=9000
+      volumes:
+        - ./src:/var/www:cached
+        - ./logs/nginx/:/var/log/nginx
+        - ./nginx/sites/:/etc/nginx/sites-available
+      ports:
+        - "80:80"
+        - "443:443"
+      depends_on:
+        - php-fpm
+
+### MySQL ################################################
+    mysql:
+      build:
+        context: ./mysql
+        args:
+          - MYSQL_VERSION=5.7
+      environment:
+        - MYSQL_DATABASE=mydatabase
+        - MYSQL_USER=myuser
+        - MYSQL_PASSWORD=mysecret
+        - MYSQL_ROOT_PASSWORD=mysecret
+        - TZ=UTC
+      volumes:
+        - ./data/mysql:/var/lib/mysql
+        - ./mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      ports:
+        - "3306:3306"
+
+
+    workspace:
+      build:
+        context: ./workspace
+      volumes:
+        - ./src:/var/www:cached
+      ports:
+        - "2222:22"
+      tty: true

@@ -41,17 +41,18 @@ services:
         - MYSQL_USER=myuser
         - MYSQL_PASSWORD=mysecret
         - MYSQL_ROOT_PASSWORD=mysecret
-        - TZ=UTC
+        - TZ=${TZ}
       volumes:
         - ./data/mysql:/var/lib/mysql
         - ./mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
       ports:
         - "3306:3306"
 
-
     workspace:
       build:
         context: ./workspace
+        args:
+          - TZ=${TZ}
       volumes:
         - ./src:/var/www:cached
       ports:

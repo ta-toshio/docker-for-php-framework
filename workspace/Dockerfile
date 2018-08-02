@@ -80,7 +80,7 @@ RUN groupadd -g ${PGID} me && \
     usermod -p "*" me
 
 ARG TZ=UTC
-ENV TZ UTC
+ENV TZ ${TZ}
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 

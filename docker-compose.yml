@@ -48,6 +48,19 @@ services:
       ports:
         - "3306:3306"
 
+### PostgreSQL ###########################################
+    postgres:
+      build: ./postgres
+      volumes:
+        - ./data/postgres:/var/lib/postgresql/data
+        - ./postgres:/app
+      ports:
+        - "5432:5432"
+      environment:
+        - POSTGRES_DB=mydatabase
+        - POSTGRES_USER=myuser
+        - POSTGRES_PASSWORD=mysecret
+
     workspace:
       build:
         context: ./workspace
